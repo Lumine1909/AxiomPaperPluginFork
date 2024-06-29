@@ -2,6 +2,7 @@ package com.moulberry.axiom.packet;
 
 import com.google.common.util.concurrent.RateLimiter;
 import com.moulberry.axiom.AxiomPaper;
+import com.moulberry.axiom.V1_20_4Util;
 import com.moulberry.axiom.WorldExtension;
 import com.moulberry.axiom.buffer.BiomeBuffer;
 import com.moulberry.axiom.buffer.BlockBuffer;
@@ -39,7 +40,6 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.lighting.LightEngine;
 import org.bukkit.Location;
 import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
 
@@ -122,7 +122,7 @@ public class SetBlockBufferPacketListener {
     private void applyBlockBuffer(ServerPlayer player, MinecraftServer server, BlockBuffer buffer, ResourceKey<Level> worldKey) {
         server.execute(() -> {
             try {
-                ServerLevel world = player.serverLevel();
+                ServerLevel world = player.getLevel();
                 if (!world.dimension().equals(worldKey)) return;
 
                 if (!this.plugin.canUseAxiom(player.getBukkitEntity(), "axiom.build.section")) {
@@ -238,7 +238,7 @@ public class SetBlockBufferPacketListener {
                                     }
 
                                     // Update Light
-                                    sectionLightChanged |= LightEngine.hasDifferentLightProperties(chunk, blockPos, old, blockState);
+                                    sectionLightChanged |= V1_20_4Util.hasDifferentLightProperties(chunk, blockPos, old, blockState);
 
                                     // Update Poi
                                     Optional<Holder<PoiType>> newPoi = containerMaybeHasPoi ? PoiTypes.forState(blockState) : Optional.empty();
@@ -322,7 +322,7 @@ public class SetBlockBufferPacketListener {
     private void applyBiomeBuffer(ServerPlayer player, MinecraftServer server, BiomeBuffer biomeBuffer, ResourceKey<Level> worldKey) {
         server.execute(() -> {
             try {
-                ServerLevel world = player.serverLevel();
+                ServerLevel world = player.getLevel();
                 if (!world.dimension().equals(worldKey)) return;
 
                 if (!this.plugin.canUseAxiom(player.getBukkitEntity(), "axiom.build.section")) {

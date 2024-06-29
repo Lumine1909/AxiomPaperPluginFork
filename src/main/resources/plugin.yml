@@ -69,3 +69,6 @@ permissions:
   axiom.can_import_blocks:
     description: Allows players to import schematics/blueprints into Axiom
     default: true
+  axiompatch.edit:
+    description: edit by axiom
+    default: op

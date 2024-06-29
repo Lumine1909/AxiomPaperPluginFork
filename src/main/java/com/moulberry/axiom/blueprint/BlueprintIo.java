@@ -61,7 +61,7 @@ public class BlueprintIo {
 
         // Block data
         dataInputStream.readInt(); // Ignore block data length
-        CompoundTag blockDataTag = NbtIo.readCompressed(dataInputStream, NbtAccounter.unlimitedHeap());
+        CompoundTag blockDataTag = NbtIo.readCompressed(dataInputStream);
         int blueprintDataVersion = blockDataTag.getInt("DataVersion");
         if (blueprintDataVersion == 0) blueprintDataVersion = currentDataVersion;
 

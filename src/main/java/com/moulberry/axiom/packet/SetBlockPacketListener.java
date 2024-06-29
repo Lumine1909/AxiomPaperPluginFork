@@ -2,6 +2,7 @@ package com.moulberry.axiom.packet;
 
 import com.google.common.collect.Maps;
 import com.moulberry.axiom.AxiomPaper;
+import com.moulberry.axiom.V1_20_4Util;
 import com.moulberry.axiom.integration.Integration;
 import com.moulberry.axiom.integration.coreprotect.CoreProtectIntegration;
 import com.moulberry.axiom.integration.plotsquared.PlotSquaredIntegration;
@@ -26,15 +27,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.lighting.LightEngine;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R3.block.CraftBlock;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R3.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -128,7 +128,7 @@ public class SetBlockPacketListener implements PluginMessageListener {
             }
         }
 
-        CraftWorld world = player.level().getWorld();
+        CraftWorld world = player.level.getWorld();
 
         BlockPlaceContext blockPlaceContext = new BlockPlaceContext(player, hand, player.getItemInHand(hand), blockHit);
 
@@ -146,7 +146,7 @@ public class SetBlockPacketListener implements PluginMessageListener {
                 }
 
                 // Disallow in unloaded chunks
-                if (!player.level().isLoaded(blockPos)) {
+                if (!player.level.isLoaded(blockPos)) {
                     continue;
                 }
 
@@ -160,12 +160,12 @@ public class SetBlockPacketListener implements PluginMessageListener {
                 }
 
                 if (CoreProtectIntegration.isEnabled()) {
-                    BlockState old = player.level().getBlockState(blockPos);
+                    BlockState old = player.level.getBlockState(blockPos);
                     CoreProtectIntegration.logRemoval(bukkitPlayer.getName(), old, world, blockPos);
                 }
 
                 // Place block
-                player.level().setBlock(blockPos, blockState, 3);
+                player.level.setBlock(blockPos, blockState, 3);
                 CoreProtectIntegration.logPlacement(bukkitPlayer.getName(), blockState, world, blockPos);
             }
         } else {
@@ -181,7 +181,7 @@ public class SetBlockPacketListener implements PluginMessageListener {
                 }
 
                 // Disallow in unloaded chunks
-                if (!player.level().isLoaded(blockPos)) {
+                if (!player.level.isLoaded(blockPos)) {
                     continue;
                 }
 
@@ -205,7 +205,7 @@ public class SetBlockPacketListener implements PluginMessageListener {
                 int cy = by >> 4;
                 int cz = bz >> 4;
 
-                ServerLevel level = player.serverLevel();
+                ServerLevel level = player.getLevel();
                 LevelChunk chunk = level.getChunk(cx, cz);
                 chunk.setUnsaved(true);
 
@@ -270,7 +270,7 @@ public class SetBlockPacketListener implements PluginMessageListener {
                     level.getChunkSource().blockChanged(blockPos);
 
                     // Update Light
-                    if (LightEngine.hasDifferentLightProperties(chunk, blockPos, old, blockState)) {
+                    if (V1_20_4Util.hasDifferentLightProperties(chunk, blockPos, old, blockState)) {
                         // Note: Skylight Sources not currently needed on Paper due to Starlight
                         // This might change in the future, so be careful!
                         // chunk.getSkyLightSources().update(chunk, x, by, z);
@@ -305,12 +305,12 @@ public class SetBlockPacketListener implements PluginMessageListener {
             BlockPos clickedPos = blockPlaceContext.getClickedPos();
 
             // Disallow in unloaded chunks
-            if (!player.level().isLoaded(clickedPos)) {
+            if (!player.level.isLoaded(clickedPos)) {
                 return;
             }
 
             BlockState desiredBlockState = blocks.get(clickedPos);
-            BlockState actualBlockState = player.level().getBlockState(clickedPos);
+            BlockState actualBlockState = player.level.getBlockState(clickedPos);
             Block actualBlock = actualBlockState.getBlock();
 
             // Ensure block is correct
@@ -324,10 +324,10 @@ public class SetBlockPacketListener implements PluginMessageListener {
 
             ItemStack inHand = player.getItemInHand(hand);
 
-            BlockItem.updateCustomBlockEntityTag(player.level(), player, clickedPos, inHand);
+            BlockItem.updateCustomBlockEntityTag(player.level, player, clickedPos, inHand);
 
             if (!(actualBlock instanceof BedBlock) && !(actualBlock instanceof DoublePlantBlock) && !(actualBlock instanceof DoorBlock)) {
-                actualBlock.setPlacedBy(player.level(), clickedPos, actualBlockState, player, inHand);
+                actualBlock.setPlacedBy(player.level, clickedPos, actualBlockState, player, inHand);
             }
         }
     }

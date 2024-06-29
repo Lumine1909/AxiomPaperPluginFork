@@ -10,8 +10,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R3.util.CraftNamespacedKey;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.util.CraftNamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +47,7 @@ public class TeleportPacketListener implements PluginMessageListener {
 
         // Prevent teleport based on config value
         boolean allowTeleportBetweenWorlds = this.plugin.configuration.getBoolean("allow-teleport-between-worlds");
-        if (!allowTeleportBetweenWorlds && !((CraftPlayer)player).getHandle().serverLevel().dimension().equals(resourceKey)) {
+        if (!allowTeleportBetweenWorlds && !((CraftPlayer)player).getHandle().getLevel().dimension().equals(resourceKey)) {
             return;
         }
 
